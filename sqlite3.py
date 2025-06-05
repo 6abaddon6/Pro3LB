@@ -2,13 +2,6 @@ import sqlite3
 
 class DBManager:
     def __init__(self, db_name='tasks.db'):
-        """
-        Ініціалізує менеджер бази даних.
-        Підключається до вказаної бази даних SQLite та створює таблицю завдань, якщо вона не існує.
-
-        Args:
-            db_name (str): Ім'я файлу бази даних SQLite.
-        """
         self.db_name = db_name
         self.conn = None
         self.cursor = None
@@ -16,7 +9,6 @@ class DBManager:
         self._create_table()
 
     def _connect(self):
-        """Встановлює з'єднання з базою даних."""
         try:
             self.conn = sqlite3.connect(self.db_name)
             self.cursor = self.conn.cursor()
@@ -26,7 +18,6 @@ class DBManager:
             raise
 
     def _create_table(self):
-        """Створює таблицю 'tasks', якщо вона не існує."""
         try:
             self.cursor.execute('''
                 CREATE TABLE IF NOT EXISTS tasks (
@@ -44,12 +35,6 @@ class DBManager:
             raise
 
     def add_task(self, user_id, description, status='Очікує'):
-        """
-        Додає нове завдання до бази даних.
-
-        Returns:
-            int: ID новоствореного завдання.
-        """
         try:
             self.cursor.execute(
                 "INSERT INTO tasks (user, description, status) VALUES (?, ?, ?)",
@@ -63,9 +48,6 @@ class DBManager:
             return None
 
     def update_task_status(self, task_id, new_status):
-        """
-        Оновлює статус завдання за його ID.
-        """
         try:
             self.cursor.execute(
                 "UPDATE tasks SET status = ? WHERE id = ?",
@@ -78,12 +60,6 @@ class DBManager:
             return False
 
     def get_all_tasks(self):
-        """
-        Отримує всі завдання з бази даних.
-
-        Returns:
-            list: Список словників, кожен з яких представляє завдання.
-        """
         try:
             self.cursor.execute("SELECT id, user, description, status, timestamp FROM tasks ORDER BY id")
             rows = self.cursor.fetchall()
@@ -102,12 +78,6 @@ class DBManager:
             return []
 
     def get_task_by_id(self, task_id):
-        """
-        Отримує завдання за його ID.
-
-        Returns:
-            dict: Словник з інформацією про завдання або None, якщо не знайдено.
-        """
         try:
             self.cursor.execute("SELECT id, user, description, status, timestamp FROM tasks WHERE id = ?", (task_id,))
             row = self.cursor.fetchone()
@@ -125,7 +95,6 @@ class DBManager:
             return None
 
     def close(self):
-        """Закриває з'єднання з базою даних."""
         if self.conn:
             self.conn.close()
             print(f"З'єднання з базою даних {self.db_name} закрито.")
