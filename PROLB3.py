@@ -7,19 +7,12 @@ from db_manager import DBManager  # Імпортуємо наш клас DBManag
 
 class TaskManager:
     def __init__(self, db_name='tasks.db'):
-        """
-        Ініціалізує менеджер завдань.
-        Містить чергу завдань (queue) та використовує DBManager для взаємодії з базою даних.
-        """
         self.db_manager = DBManager(db_name)
         self.task_queue = deque()
         self._load_pending_tasks_to_queue()
         print("\n--- Симуляція багатокористувацької системи з чергою завдань (з SQLite) ---")
 
     def _load_pending_tasks_to_queue(self):
-        """
-        Завантажує завдання зі статусом 'Очікує' або 'В процесі' з БД у чергу.
-        """
         all_db_tasks = self.db_manager.get_all_tasks()
         for task in all_db_tasks:
             if task['status'] == 'Очікує' or task['status'] == 'В процесі':
@@ -28,9 +21,6 @@ class TaskManager:
         self.display_queue_status()
 
     def add_task(self, user_id, task_description):
-        """
-        Додає нове завдання до бази даних та до черги.
-        """
         task_id = self.db_manager.add_task(user_id, task_description, 'Очікує')
         if task_id is not None:
             self.task_queue.append(task_id)
@@ -38,9 +28,6 @@ class TaskManager:
         self.display_queue_status()
 
     def process_next_task(self):
-        """
-        Обробляє наступне завдання з черги.
-        """
         if not self.task_queue:
             print("Черга завдань порожня. Немає завдань для обробки.")
             return False
@@ -69,15 +56,9 @@ class TaskManager:
         return True
 
     def display_queue_status(self):
-        """
-        Відображає поточний стан черги (ID завдань).
-        """
         print(f"Поточний стан черги (ID): {list(self.task_queue)}")
 
     def display_all_tasks_status(self):
-        """
-        Відображає статус всіх завдань, зчитаних з бази даних.
-        """
         print("\n--- Загальний статус всіх завдань (з БД) ---")
         all_tasks = self.db_manager.get_all_tasks()
         if not all_tasks:
@@ -92,9 +73,6 @@ class TaskManager:
         print("-" * 90)
 
     def generate_report(self):
-        """
-        Генерує звіт про оброблені та необроблені завдання, зчитані з бази даних.
-        """
         print("\n--- Звіт про обробку завдань (з БД) ---")
         all_tasks = self.db_manager.get_all_tasks()
 
@@ -130,9 +108,6 @@ class TaskManager:
             print("\nНемає завдань, що завершилися з помилкою.")
 
     def __del__(self):
-        """
-        Деструктор: гарантує закриття з'єднання з базою даних при завершенні роботи об'єкта.
-        """
         self.db_manager.close()
 
 
